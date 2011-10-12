@@ -1,0 +1,2 @@
+http://www.morganfabre.com/PROLOG/
+http://www.probp.com/examples/cg/othello.pl
