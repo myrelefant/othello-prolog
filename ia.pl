@@ -9,17 +9,6 @@
 nonVide([]) :- !,fail.
 nonVide(_).
 
-/* supprimerElement supprime les occurences de l'element Element dans la liste ListeIn et en crée la nouvelle liste ListeOut.
-
-	Mode d'emploi :
-	supprimerElement(Element, ListeIn, ListeOut).
-*/
-supprimerElement(Element,[Element],[]). %point d'arret si la liste finit par Element
-supprimerElement(Element,[B|[]],[B|[]]). %point d'arret si la liste finit par autre chose
-supprimerElement(Element,[Element|Q1],Q2):-supprimerElement(Element,Q1,Q2). %on efface les Element
-supprimerElement(Element,[T1|Q1],[T1|Q2]):-supprimerElement(Element,Q1,Q2). %si la lettre analysée n'est pas Element on la garde
-
-
 /*
 	max compare Nb1 et Nb2 et retourne le plus grand des deux.
 
