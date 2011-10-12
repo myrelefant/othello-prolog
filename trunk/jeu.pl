@@ -244,3 +244,51 @@ chercherPossibiliteGaucheHoriz2(XNow, X, ListeRond, ListeCroix, ListeCasesPossib
 
 trouverLigne(X, Ligne):- Ligne is X//10.
 trouverColonne(X, Colonne) :- Colonne is X mod 10.
+
+
+
+
+
+
+/*
+	jouerCoup permet au joueur Joueur de placer un jeton sur la case Coup et effectue les changements de jetons engendrés.
+	
+	Mode d'emploi :
+	jouerCoup(Joueur, Coup, CasesJoueurX, CasesJoueurO, NvCasesJoueurX, NvCasesJoueurO).
+*/
+jouerCoup(x, Coup, CasesJoueurX, CasesJoueurO, NvCasesJoueurX, NvCasesJoueurO) :-
+	coin(Coup), Coup == 11;
+	coin(Coup), Coup == 18, chercherProchainPion(Joueur, Coup, 
+	
+	
+/*
+	changerLigne change tous les pions en les mettant depuis la coordonnée de Coup dans la direction Direction de la couleur de Joueur
+	jusqu'à ce qu'un autre pion du joueur soit rencontré.
+	La valeur de Direction peut être :
+	+1 (droite)
+	-1 (gauche)
+	+10 (bas)
+	-10 (haut)
+	+11 (diagonale bas droite)
+	-11 (diagonale haut gauche)
+	+9 (diagonale bas gauche)
+	-9 (diagonale haut droite)
+	
+	Mode d'emploi
+	changerLigne(Joueur, Coup, Direction, CasesJoueurX, CasesJoueurO, NvCasesJoueurX, NvCasesJoueurO).
+*/
+	changerLigne(Joueur, Coup, Direction, CasesJoueurX, CasesJoueurO, NvCasesJoueurX, NvCasesJoueurO).
+	
+% Fonctions outils
+
+/* supprimerElement supprime les occurences de l'element Element dans la liste ListeIn et en crée la nouvelle liste ListeOut.
+
+	Mode d'emploi :
+	supprimerElement(Element, ListeIn, ListeOut).
+*/
+supprimerElement(Element,[Element],[]). %point d'arret si la liste finit par Element
+supprimerElement(Element,[B|[]],[B|[]]). %point d'arret si la liste finit par autre chose
+supprimerElement(Element,[Element|Q1],Q2):-supprimerElement(Element,Q1,Q2). %on efface les Element
+supprimerElement(Element,[T1|Q1],[T1|Q2]):-supprimerElement(Element,Q1,Q2). %si la lettre analysée n'est pas Element on la garde
+
+%Fin fonctions outils
