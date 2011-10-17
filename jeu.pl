@@ -258,7 +258,7 @@ trouverColonne(X, Colonne) :- Colonne is X mod 10.
 */
 jouerCoup(x, Coup, CasesJoueurX, CasesJoueurO, NvCasesJoueurX, NvCasesJoueurO) :-
 	coin(Coup), Coup == 11;
-	coin(Coup), Coup == 18, chercherProchainPion(Joueur, Coup, 
+	coin(Coup), Coup == 18, changerLigne(Joueur, Coup, 
 	
 	
 /*
@@ -277,7 +277,48 @@ jouerCoup(x, Coup, CasesJoueurX, CasesJoueurO, NvCasesJoueurX, NvCasesJoueurO) :
 	Mode d'emploi
 	changerLigne(Joueur, Coup, Direction, CasesJoueurX, CasesJoueurO, NvCasesJoueurX, NvCasesJoueurO).
 */
-	changerLigne(Joueur, Coup, Direction, CasesJoueurX, CasesJoueurO, NvCasesJoueurX, NvCasesJoueurO).
+changerLigne(Joueur, Coup, Direction, CasesJoueurX, CasesJoueurO, _, _) :-
+	not(appartient(Coup, CasesJoueurX, CasesJoueurO)),
+	fail,
+	!. //Après avoir parcouru toute la direction, on tombe sur une case vide, ie il n'y a en fait pas de changement de pion sur cette direction.
+
+%cas où la dernière case explorable est de la couleur du joueur qui a joué, on peut autoriser le changerment de couleur des pions
+changerLigne(Joueur, Coup, Direction, CasesJoueurX, CasesJoueurO, CasesJoueurX, CasesJoueurO) :-
+	bordureDroite(Coup), %à faire
+	(Direction == 1 ; Direction == 11 ; Direction == -9),
+	(Joueur == x, Element(Coup, CasesJoueurX) ; Joueur == o, Element(Coup, CasesJoueurO))
+	;
+	bordureGauche(Coup), %à faire
+	(Direction == -1 ; Direction == -11 ; Direction == 9),
+	(Joueur == x, Element(Coup, CasesJoueurX) ; Joueur == o, Element(Coup, CasesJoueurO))
+	;
+	bordureHaut(Coup), %à faire
+	(Direction == -10 ; Direction == -11 ; Direction == -9),
+	(Joueur == x, Element(Coup, CasesJoueurX) ; Joueur == o, Element(Coup, CasesJoueurO))
+	;
+	bordureBas(Coup), %à faire
+	(Direction == 10 ; Direction == 11 ; Direction == 9),
+	(Joueur == x, Element(Coup, CasesJoueurX) ; Joueur == o, Element(Coup, CasesJoueurO))
+	.
+	
+changerLigne(Joueur, Coup, Direction, CasesJoueurX, CasesJoueurO, NvCasesJoueurX, NvCasesJoueurO) :- 
+	Joueur == x,
+	CoupSuivant is Coup + direction,
+	changerLigne(Joueur, CoupSuivant, Direction, CasesJoueurX, CasesJoueurO, NvCasesJoueurX, NvCasesJoueurO),
+	appartient(Coup, CasesJoueurO),
+	supprimerElement(Coup, CasesJoueurO),
+	NvCasesJoueurX is [Coup, CasesJoueurX]
+	;
+	Joueur == o,
+	CoupSuivant is Coup + direction,
+	changerLigne(Joueur, CoupSuivant, Direction, CasesJoueurX, CasesJoueurO, NvCasesJoueurX, NvCasesJoueurO),
+	appartient(Coup, CasesJoueurX),
+	supprimerElement(Coup, CasesJoueurX),
+	NvCasesJoueurX is [Coup, CasesJoueurO]
+	.
+
+	
+	
 	
 % Fonctions outils
 
@@ -291,4 +332,7 @@ supprimerElement(Element,[B|[]],[B|[]]). %point d'arret si la liste finit par au
 supprimerElement(Element,[Element|Q1],Q2):-supprimerElement(Element,Q1,Q2). %on efface les Element
 supprimerElement(Element,[T1|Q1],[T1|Q2]):-supprimerElement(Element,Q1,Q2). %si la lettre analysée n'est pas Element on la garde
 
+
+appartient(X,[X|_]).
+appartient(X,[_|Queue]) :- appartient(X,Queue).
 %Fin fonctions outils

@@ -81,7 +81,7 @@ rechercheAlphaBeta(Joueur, CasesJoueurX, CasesJoueurO, CasesVides, [Coup|AutresC
 
 evaluation(Joueur, CasesX, CasesO, Valeur) :- 
 	jetonAdverse(Joueur, Adversaire), evaluation(Joueur, Adversaire, CasesX, CasesO, Valeur1), evaluation(Adversaire, Joueur, CasesX, CasesO, Valeur2), Valeur is Valeur1 - Valeur2.
-evaluation(x,_,[],_,0) :- !. %si on évalue le joueur o et qu'il n'y a plus de cases xs, on a une valeur de 0
+evaluation(x,_,[],_,0) :- !. %si on évalue le joueur x et qu'il n'y a plus de cases x, on a une valeur de 0
 evaluation(o,_,_,[],0) :- !. %si on évalue le joueur o et qu'il n'y a plus de cases o, on a une valeur de 0
 evaluation(x, Adversaire, [CaseX|CasesX], _, Valeur) :- 
 	evaluation(x, Adversaire, CasesX, _, Valeur1), valeurCase(CaseX, Valeur2), Valeur is Valeur1 + Valeur2, !.
@@ -110,6 +110,14 @@ rechercheMinMax(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, Coup
 	ProfondeurInf is Profondeur-1,
 	lancerRecherche(ProfondeurInf, Joueur,  CasesJoueurX, CasesJoueurO, CasesPossibles, CoupOptimal, -ScoreCoup).
 
+/*
+	lancerRecherche trouve, pour un plateau donné, le meilleur coup à jouer pour le joueur Joueur en effectuant une
+	recherche MinMax de profondeur Profondeur
+	
+	Mode d'emploi :
+	lancerRecherche(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, CoupsPossibles, MeilleurCoup, Score)
+	
+*/
 lancerRecherche(0, Joueur, CasesJoueurX, CasesJoueurO, CasesPossibles, MeilleurCoup, Score) :- 
 	evaluation(Joueur, CasesJoueurX, CasesJoueurO, Score),!. %on a atteint la profondeur de recherche maximum
 lancerRecherche(_, Joueur, CasesJoueurX, CasesJoueurO, [], MeilleurCoup, Score) :- 
