@@ -92,21 +92,42 @@ adversaire(croix, rond).
 pionJoueur(rond, ListeRond, ListeCroix, ListeRond).
 pionJoueur(croix, ListeRond, ListeCroix, ListeCroix).
 
-testCoupsLegaux(R, A, B):- chercherCoupsPossibles(rond, [64, 46], [45, 54], R).
+
+jeu(Tour, ListeRond, ListeCroix, NListeRond, NListeCroix) :- 
 
 
-			
-testJouerPiont(JN, AN):- jouerPion(44, rond, [[64, -1, -1, -1, 44, -1, -1, -1, -1], [46, -1, 44, -1, -1, -1, -1, -1, -1]] , [64, 46], [45, 54], JN, AN).
+testJouerPiont(JN, AN):- jouerPion(77, rond, [[44, -1, -1, -1, -1, -1, 17, -1, 77], [48, -1, 46, -1, -1, 15, -1, 75, -1], [27, -1, 25, 77, -1, -1, -1, -1, -1]] , [44, 48, 27], [35, 67, 37, 26, 55, 47, 57, 66], JN, AN), write('JN: '), write(JN), write('\n'), write('AN: '), write(AN), write('\n').
 
-jouerPion(_,_,[], _, _, _, _):-!.
-jouerPion(X, Joueur, [[XEnd, RG, RD, RH, RB, RHG, RHD, RBG, RBD]|LCP], ListeRond, ListeCroix, PionsJN, PionsAN):- 
+
+getListeCasesPossiblesOldFormat(L, R):- getListeCasesPossiblesD(L, R2), suppr(-1, R2, R3), supprDoublon(R3, R),!.
+getListeCasesPossiblesD([], _):-!.
+getListeCasesPossiblesD([XEnd, RG, RD, RH, RB, RHG, RHD, RBG, RBD], [RG, RD, RH, RB, RHG, RHD, RBG, RBD]):-!.
+getListeCasesPossiblesD([[XEnd, RG, RD, RH, RB, RHG, RHD, RBG, RBD]|LCP], [RG, RD, RH, RB, RHG, RHD, RBG, RBD|R2]):- getListeCasesPossiblesD(LCP, R2),!.
+
+jouerPion(_,_, [], _, _, _, _):-!.
+jouerPion(X, Joueur, [[XEnd, RG, RD, RH, RB, RBD, RBG, RHD, RHG]|LCP], ListeRond, ListeCroix, PionsJN, PionsAN):- 
 									adversaire(Joueur, Adversaire), 
 									pionJoueur(Joueur, ListeRond, ListeCroix, PionsJ),
 									pionJoueur(Adversaire, ListeRond, ListeCroix, PionsA),
 									jouerPion(X, Joueur, LCP, ListeRond, ListeCroix, PionsJN2, PionsAN2),
-									((RD  == X, mangerPion(X, XEnd, droite, PionsJ, PionsA, PionsJND, PionsAND)); true),
-									((RB  == X, mangerPion(X, XEnd, bas, PionsJ, PionsA, PionsJNB, PionsANB)); true),
-									append(PionsJND, PionsJNB, PionsJNDoublon), append(PionsAND, PionsANB, PionsANDoublon), supprDoublon(PionsJNDoublon, PionsJN), supprDoublon(PionsANDoublon, PionsAN).
+									((RG  == X, mangerPion(X, XEnd, gauche, PionsJ, PionsA, PionsJNG, PionsANG)); true),
+									((RD == X, mangerPion(X, XEnd, droite, PionsJ, PionsA, PionsJND, PionsAND)); true),
+									((RB == X, mangerPion(X, XEnd, bas, PionsJ, PionsA, PionsJNB, PionsANB)); true),									
+									((RH  == X, mangerPion(X, XEnd, haut, PionsJ, PionsA, PionsJNH, PionsANH)); true),
+									((RHG == X, mangerPion(X, XEnd, hautGauche, PionsJ, PionsA, PionsJNHG, PionsANHG)); true),
+									((RHD == X, mangerPion(X, XEnd, hautDroit, PionsJ, PionsA, PionsJNHD, PionsANHD)); true),
+									((RBG == X, mangerPion(X, XEnd, basGauche, PionsJ, PionsA, PionsJNBG, PionsANBG)); true),
+									((RBD == X, mangerPion(X, XEnd, basDroit, PionsJ, PionsA, PionsJNBD, PionsANBD)); true),
+									append(PionsJND, PionsJNG, PionsJNDoublon2), append(PionsAND, PionsANG, PionsANDoublon2),
+									append(PionsJNDoublon2, PionsJNB, PionsJNDoublon3), append(PionsANDoublon2, PionsANB, PionsANDoublon3),
+									append(PionsJNDoublon3, PionsJNH, PionsJNDoublon4), append(PionsANDoublon3, PionsANH, PionsANDoublon4),
+									append(PionsJNDoublon4, PionsJNHG, PionsJNDoublon5), append(PionsANDoublon4, PionsANHG, PionsANDoublon5),
+									append(PionsJNDoublon5, PionsJNHD, PionsJNDoublon6), append(PionsANDoublon5, PionsANHD, PionsANDoublon6),
+									append(PionsJNDoublon6, PionsJNBG, PionsJNDoublon7), append(PionsANDoublon6, PionsANBG, PionsANDoublon7),
+									append(PionsJNDoublon7, PionsJNBD, PionsJNDoublon8), append(PionsANDoublon7, PionsANBD, PionsANDoublon8),
+									append(PionsJN2, PionsJNDoublon8, PionsJNDoublon), append(PionsAN2, PionsANDoublon8, PionsANDoublon), 
+									supprDoublon(PionsJNDoublon, PionsJN), supprDoublon(PionsANDoublon, PionsANATraiter), supprElements(PionsJN, PionsANATraiter, PionsAN),!.
+
 
 
 supprDoublon([E],[E]):- !. %une liste à un seul élément est un ensemble
@@ -127,6 +148,12 @@ mangerPion(X, XEnd, Direction, PionsJ, PionsA, PionsJN, PionsAN):- getVoisin(X, 
 mangerPion(_, X, X, _, PionsJ, PionsA, PionsJ, PionsA) :-!. 
 mangerPion(X, XCurr, XEnd, Direction, PionsJ, PionsA, PionsJN, PionsAN):- getVoisin(XCurr, Direction, XVois), mangerPion(X, XVois, XEnd, Direction, PionsJ, PionsA, PionsJN2, PionsAN2), addElem(XCurr, PionsJN2, PionsJN3), addElem(X, PionsJN3, PionsJN), suppr(XCurr, PionsAN2, PionsAN),!.
 
+%supprElements(L1,L2,L3) supprime tous les éléments de L2 qui sont présents dans L1 et met le résultat final dans L3
+supprElements(_,[],[]):-!.
+supprElements(L1,[T],[T]):- not(member(T,L1)),!.
+supprElements(L1,[T],[]):- member(T,L1),!.
+supprElements(L1,[T|Q],[T|L3]):-not(member(T,L1)), supprElements(L1,Q,L3),!. 
+supprElements(L1,[T|Q],L3):-member(T,L1), supprElements(L1,Q,L3),!. 
 
 suppr(Lettre,[Lettre],[]). %point d'arret si la liste finit par Lettre
 suppr(Lettre,[B|[]],[B|[]]). %point d'arret si la liste finit par autre chose
