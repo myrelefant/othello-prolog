@@ -58,8 +58,7 @@
 
 */
 
-isCase(X) :- Jeu = 
-			[
+isCase(X) :- member(X, [
 				11, 12, 13, 14, 15, 16, 17, 18,   
 			    21, 22, 23, 24, 25, 26, 27, 28,  
 			    31, 32, 33, 34, 35, 36, 37, 38, 
@@ -68,7 +67,7 @@ isCase(X) :- Jeu =
 			    61, 62, 63, 64, 65, 66, 67, 68,   
 			    71, 72, 73, 74, 75, 76, 77, 78,   
 				81, 82, 83, 84, 85, 86, 87, 88
-			], member(X, Jeu).
+			]).
 
 
 %XVoisin = 0 lorsque le pion n a pas de voisin.
@@ -93,10 +92,22 @@ pionJoueur(rond, ListeRond, ListeCroix, ListeRond).
 pionJoueur(croix, ListeRond, ListeCroix, ListeCroix).
 
 
-jeu(Tour, ListeRond, ListeCroix, NListeRond, NListeCroix) :- 
+testJeu(R, C) :- jeu(rond, [27], [26, 25, 28, 36]),!.
 
 
-testJouerPiont(JN, AN):- jouerPion(77, rond, [[44, -1, -1, -1, -1, -1, 17, -1, 77], [48, -1, 46, -1, -1, 15, -1, 75, -1], [27, -1, 25, 77, -1, -1, -1, -1, -1]] , [44, 48, 27], [35, 67, 37, 26, 55, 47, 57, 66], JN, AN), write('JN: '), write(JN), write('\n'), write('AN: '), write(AN), write('\n').
+
+jeu(Joueur, ListeRond, ListeCroix) :-  
+																chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R), 
+																getListeCasesPossiblesOldFormat(R, RF), afficheJeu(Joueur, RF, ListeCroix, ListeRond), 
+																read(Case), 
+																(member(Case, RF), jouerPion(Case, Joueur, R, ListeRond, ListeCroix, PionsJN, PionsAN)),
+																(
+																	(Joueur == rond, NListeRond = PionsJN, NListeCroix = PionsAN);
+																 	(Joueur == croix, NListeCroix = PionsJN, NListeRond = PionsAN)
+																 ), adversaire(Joueur, Adversaire), jeu(Adversaire, NListeRond, NListeCroix).
+
+
+testJouerPiont(JN, AN):- jouerPion(77, rond, [], [27, -1, 25, 77, -1, -1, -1, -1, -1], [44], [45, 46, 54], JN, AN), write('JN: '), write(JN), write('\n'), write('AN: '), write(AN), write('\n').
 
 
 getListeCasesPossiblesOldFormat(L, R):- getListeCasesPossiblesD(L, R2), suppr(-1, R2, R3), supprDoublon(R3, R),!.
@@ -155,23 +166,23 @@ supprElements(L1,[T],[]):- member(T,L1),!.
 supprElements(L1,[T|Q],[T|L3]):-not(member(T,L1)), supprElements(L1,Q,L3),!. 
 supprElements(L1,[T|Q],L3):-member(T,L1), supprElements(L1,Q,L3),!. 
 
-suppr(Lettre,[Lettre],[]). %point d'arret si la liste finit par Lettre
-suppr(Lettre,[B|[]],[B|[]]). %point d'arret si la liste finit par autre chose
+suppr(Lettre,[Lettre],[]). %point d arret si la liste finit par Lettre
+suppr(Lettre,[B|[]],[B|[]]). %point d arret si la liste finit par autre chose
 suppr(Lettre,[Lettre|Q1],Q2):-suppr(Lettre,Q1,Q2),!. %on efface les Lettre
-suppr(Lettre,[T1|Q1],[T1|Q2]):-suppr(Lettre,Q1,Q2). %si la lettre analysée n'est pas Lettre on la garde
+suppr(Lettre,[T1|Q1],[T1|Q2]):-suppr(Lettre,Q1,Q2). %si la lettre analysée n est pas Lettre on la garde
 
 
 chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R):- 
 									adversaire(Joueur, Adversaire), 
 									pionJoueur(Joueur, ListeRond, ListeCroix, PionsJ),
-									pionJoueur(Adversaire, ListeRond, ListeCroix, PionsA), 
-									chercherCoupsPossibles2(PionsJ, PionsJ, PionsA, R), write(R).
+									pionJoueur(Adversaire, ListeRond, ListeCroix, PionsA), chercherCoupsPossibles2(PionsJ, PionsJ, PionsA, R), write(R).
 
 
 
+chercherCoupsPossibles2(_,[],_,[]):-!.
 chercherCoupsPossibles2([], _, _,_):-!.
 chercherCoupsPossibles2([TPj], PionsJ, PionsA, [RTemp]):- coupsLegaux(TPj, PionsJ, PionsA, RTemp),!.
-chercherCoupsPossibles2([TPj|LPj], PionsJ, PionsA, [RTemp|R]):- coupsLegaux(TPj, PionsJ, PionsA, RTemp), chercherCoupsPossibles2(LPj, PionsJ, PionsA, R).
+chercherCoupsPossibles2([TPj|LPj], PionsJ, PionsA, [RTemp|R]):- coupsLegaux(TPj, PionsJ, PionsA, RTemp), chercherCoupsPossibles2(LPj, PionsJ, PionsA, R),!.
 
 
 coupsLegaux(X, PionsJ, PionsA, [X | [RD, RG, RB, RH, RHG, RHD, RBG, RBD]]) :- 
@@ -193,8 +204,9 @@ coupLegauxFirstStep(Case, Direction, PionsJ, PionsA, -1):-
 coupLegauxFirstStep(Case, Direction, PionsJ, PionsA, R):- 
 	getVoisin(Case, Direction, CaseVoisine), isCase(CaseVoisine), member(CaseVoisine, PionsA), coupsLegauxSecondStep(Case, CaseVoisine, Direction, PionsJ, PionsA, R).
 coupsLegauxSecondStep(_,0,_,_,_,_,_):-!.
+coupsLegauxSecondStep(Case, CaseExp, Direction, PionsJ, PionsA, -1):- getVoisin(CaseExp, Direction, CaseVoisine), not(isCase(CaseVoisine)),!.
 coupsLegauxSecondStep(Case, CaseExp, Direction, PionsJ, PionsA, CaseVoisine):- getVoisin(CaseExp, Direction, CaseVoisine), isCase(CaseVoisine), vide(CaseVoisine, PionsJ, PionsA),!.
-coupsLegauxSecondStep(Case, CaseExp, Direction, PionsJ, PionsA, R):- getVoisin(CaseExp, Direction, CaseVoisine), isCase(CaseVoisine),member(CaseVoisine, PionsA), coupsLegauxSecondStep(Case, CaseVoisine, Direction, PionsJ, PionsA, R).
+coupsLegauxSecondStep(Case, CaseExp, Direction, PionsJ, PionsA, R):- getVoisin(CaseExp, Direction, CaseVoisine), isCase(CaseVoisine), coupsLegauxSecondStep(Case, CaseVoisine, Direction, PionsJ, PionsA, R),!.
 
 																		   
 addElem(X, L, [X|L]).
@@ -209,3 +221,5 @@ addElem(X, L, [X|L]).
 								coups_legaux(N, Case, P, PA, [NCase|T], A, TR, R)).
 coups_legaux(_, _, _, _, T, A, T, A).
 */
+
+
