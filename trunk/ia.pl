@@ -106,6 +106,8 @@ elagage(_).
 */
 rechercheMinMax(1, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, CoupAJouer, Score) :- 
 	write('-----rechercheMinMaxFin--------'),
+	write('Pions de X :'), write(CasesJoueurX),
+	write('\nPions de O :'), write(CasesJoueurO),
 	write('Le joueur '), write(Joueur), write(' joue sur la case '), write(CoupAJouer), write('\n'),
 	chercherCoupsPossibles(Joueur, CasesJoueurO, CasesJoueurX, CoupsPossibles),
 	jouerPion(CoupAJouer, Joueur, CoupsPossibles, CasesJoueurO, CasesJoueurX, NvCasesJoueurO, NvCasesJoueurX),
@@ -116,9 +118,13 @@ rechercheMinMax(1, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, CoupAJouer, S
 
 rechercheMinMax(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, CoupOptimal, Score) :- 
 	write('-----rechercheMinMax--------\n'),
-	write('Le joueur '), write(Joueur), write(' joue sur la case '), write(CoupAJouer), write('\n'),
+	write('Pions de X :'), write(CasesJoueurX),
+	write('\nPions de O :'), write(CasesJoueurO),
+	write('\nLe joueur '), write(Joueur), write(' joue sur la case '), write(CoupAJouer), write('\n'),
 	chercherCoupsPossibles(Joueur, CasesJoueurO, CasesJoueurX, CoupsPossibles),
 	jouerPion(CoupAJouer, Joueur, CoupsPossibles, CasesJoueurO, CasesJoueurX, NvCasesJoueurO, NvCasesJoueurX),
+	write('Nouveaux pions de X :'), write(NvCasesJoueurX),
+	write('\nNouveaux pions de O :'), write(NvCasesJoueurO),
 	jetonAdverse(Joueur,Adversaire),
 	write('Coups possibles pour le joueur '), write(Adversaire), write(' : '),
 	chercherCoupsPossibles(Adversaire, NvCasesJoueurO, NvCasesJoueurX, CasesPossiblesAdvTemp), %on cherche les coups possibles pour l adversaire à partir de la nouvelle configuration
@@ -129,7 +135,7 @@ rechercheMinMax(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, Coup
 		write('-----lancerRecherche2('), write(ProfondeurInf), write(', '), write(Adversaire), write(', '), write(NvCasesJoueurX), write(', '), write(NvCasesJoueurO), write('\n'),
 		lancerRecherche(ProfondeurInf, Adversaire,  NvCasesJoueurX, NvCasesJoueurO, CasesPossiblesAdv, CoupOptimal, ScoreCoupMin), Score is -ScoreCoupMin
 		;
-		CoupOptimal is CoupAJouer, Score is 2000 %si l'adversaire n'a plus de jeton, c'est un coup optimal!
+		CoupOptimal is CoupAJouer, Score is -2000 %si l'adversaire n'a plus de jeton, c'est un coup optimal!
 	),
 	write(' coupoptimal :'), write(CoupOptimal), write('; score :'), write(Score), write('\n')
 	.
@@ -168,7 +174,7 @@ lancerRecherche(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, [Coup|CoupsPossi
 	
 	.
 
-testIA :- getListeCasesPossiblesOldFormat([[27, -1, 24, -1, -1, -1, -1, 45, -1]], CasesPossibles), lancerRecherche(3, rond,  [26, 25, 28, 36], [27], CasesPossibles, MeilleurCoup, Score).
+testIA :- getListeCasesPossiblesOldFormat([[27, -1, 24, -1, -1, -1, -1, 45, -1]], CasesPossibles), lancerRecherche(5, rond,  [26, 25, 28, 36], [27], CasesPossibles, MeilleurCoup, Score).
 	
 	
 	

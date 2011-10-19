@@ -144,8 +144,10 @@ jouerPion(X, Joueur, [[XEnd, RG, RD, RH, RB, RBD, RBG, RHD, RHG]|LCP], ListeRond
 									append(PionsJNDoublon7, PionsJNBD, PionsJNDoublon8), append(PionsANDoublon7, PionsANBD, PionsANDoublon8),
 									append(PionsJN2, PionsJNDoublon8, PionsJNDoublon), append(PionsAN2, PionsANDoublon8, PionsANDoublon), 
 									supprDoublon(PionsJNDoublon, PionsJN), supprDoublon(PionsANDoublon, PionsANATraiter), supprElements(PionsJN, PionsANATraiter, PionsAN),
-									((Joueur == rond, NListeRond = PionsJN, NListeCroix = PionsAN);
-									(Joueur == croix, NListeCroix = PionsJN, NListeRond = PionsAN)),!.
+									((Joueur == rond, NListeRond = PionsAN, NListeCroix = PionsJN);
+									(Joueur == croix, NListeCroix = PionsAN, NListeRond = PionsJN)),
+	write('-------------------Nouveaux pions de X :'), write(NListeCroix),
+	write('\n---------------------------Nouveaux pions de O :'), write(NListeRond),!.
 
 
 
