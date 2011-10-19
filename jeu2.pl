@@ -109,7 +109,16 @@ jeu(2, Joueur, ListeRond, ListeCroix) :-
 																chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R), 
 																getListeCasesPossiblesOldFormat(R, RF), afficheJeu(Joueur, RF, ListeCroix, ListeRond), 
 																read(Case), 
-																(member(Case, RF), jouerPion(Case, Joueur, R, ListeRond, ListeCroix, NListeRond, NListeCroix)), adversaire(Joueur, Adversaire), jeu(2, Adversaire, NListeRond, NListeCroix).
+																(member(Case, RF), jouerPion(Case, Joueur, R, ListeRond, NListeRond, NListeCroix, NListeRond)), adversaire(Joueur, Adversaire), jeu(2, Adversaire, NListeRond, NListeCroix).
+
+jeu(1, Joueur, ListeRond, ListeCroix) :-  
+																chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R), 
+																getListeCasesPossiblesOldFormat(R, RF), afficheJeu(Joueur, RF, ListeCroix, ListeRond), 
+																read(Case), 
+																(member(Case, RF), jouerPion(Case, Joueur, R, ListeRond, ListeCroix, NListeCroix, NListeRond)), adversaire(Joueur, Adversaire), 
+																chercherCoupsPossibles(Adversaire,NListeRond, NListeCroix, RIA), 
+																getListeCasesPossiblesOldFormat(RIA, RFIA),
+																interfaceIA(Adversaire, NListeCroix, NListeRond, RFIA, MeilleurCoup), jouerPion(MeilleurCoup, Adversaire, RIA, NListeRond, NListeCroix, N2ListeCroix, N2ListeRond),jeu(1, Joueur, N2ListeRond, N2ListeCroix).
 
 
 testJouerPiont(JN, AN):- jouerPion(77, rond, [], [27, -1, 25, 77, -1, -1, -1, -1, -1], [44], [45, 46, 54], JN, AN), write('JN: '), write(JN), write('\n'), write('AN: '), write(AN), write('\n').
@@ -221,16 +230,4 @@ coupsLegauxSecondStep(Case, CaseExp, Direction, PionsJ, PionsA, R):- getVoisin(C
 
 																		   
 addElem(X, L, [X|L]).
-
-
-/*
-=coups_legaux(N, Case, P, PA, T, A, TR, R) :-	case_voisine(N, Case, _, NCase),
-							not(member(NCase, T)), !,
-							jetons_retournes(N, NCase, P, PA, [], [], R1),
-							(not_empty(R1)->
-								coups_legaux(N, Case, P, PA, [NCase|T], [[NCase,R1]|A], TR, R);
-								coups_legaux(N, Case, P, PA, [NCase|T], A, TR, R)).
-coups_legaux(_, _, _, _, T, A, T, A).
-*/
-
 
