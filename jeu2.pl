@@ -101,9 +101,9 @@ compte([_|X],Y):-
 compte([_|X],Y):-
     compte(X,Y),!.
 
-jeu(_, [], _):- afficheVainqueur(croix),!.
-jeu(_, _, []):- afficheVainqueur(rond),!.
-jeu(Joueur, ListeRond, ListeCroix):- chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R), R == [], compte(ListeRond, RRond), compte(ListeCroix, RCroix), ((RRond > RCroix, afficheVainqueur(rond)); (RRond < RCroix, afficheVainqueur(croix))),!.
+jeu(_, [], ListeCroix):- afficheVainqueur(croix), afficherGrille(11,  ListeCroix, []),!.
+jeu(_, ListeRond, []):- afficheVainqueur(rond), afficheGrille(11, [], ListeRond),!.
+jeu(Joueur, ListeRond, ListeCroix):- chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R), R == [], compte(ListeRond, RRond), compte(ListeCroix, RCroix), ((RRond > RCroix, afficheVainqueur(rond)); (RRond < RCroix, afficheVainqueur(croix))),afficherGrille(11, ListeRond, ListeCroix),!.
 jeu(Joueur, ListeRond, ListeCroix) :-  
 																chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R), 
 																getListeCasesPossiblesOldFormat(R, RF), afficheJeu(Joueur, RF, ListeCroix, ListeRond), 
@@ -215,6 +215,7 @@ coupLegauxFirstStep(Case, Direction, PionsJ, PionsA, R):-
 	getVoisin(Case, Direction, CaseVoisine), isCase(CaseVoisine), member(CaseVoisine, PionsA), coupsLegauxSecondStep(Case, CaseVoisine, Direction, PionsJ, PionsA, R).
 coupsLegauxSecondStep(_,0,_,_,_,_,_):-!.
 coupsLegauxSecondStep(Case, CaseExp, Direction, PionsJ, PionsA, -1):- getVoisin(CaseExp, Direction, CaseVoisine), not(isCase(CaseVoisine)),!.
+coupsLegauxSecondStep(Case, CaseExp, Direction, PionsJ, PionsA, -1):- getVoisin(CaseExp, Direction, CaseVoisine), isCase(CaseVoisine), member(CaseVoisine, PionsJ),!.
 coupsLegauxSecondStep(Case, CaseExp, Direction, PionsJ, PionsA, CaseVoisine):- getVoisin(CaseExp, Direction, CaseVoisine), isCase(CaseVoisine), vide(CaseVoisine, PionsJ, PionsA),!.
 coupsLegauxSecondStep(Case, CaseExp, Direction, PionsJ, PionsA, R):- getVoisin(CaseExp, Direction, CaseVoisine), isCase(CaseVoisine), coupsLegauxSecondStep(Case, CaseVoisine, Direction, PionsJ, PionsA, R),!.
 
