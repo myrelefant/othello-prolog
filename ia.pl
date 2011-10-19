@@ -16,7 +16,7 @@ nonVide(_).
 	max(Nb1, Nb2, Resultat)
 */
 max(Nb1, Nb1, Nb1) :- !.
-max(Nb1, Nb2, Resultat) :- Nb1 > Nb2, Resultat is Nb1, !; Nb1 < Nb2, Resultat is Nb2, !.
+max(Nb1, Nb2, Resultat) :- Nb1 > Nb2, Resultat = Nb1, !; Nb1 < Nb2, Resultat = Nb2, !.
 
 %------------------------------------------------------------
 %fin fonctions outils
@@ -64,9 +64,9 @@ rechercheAlphaBeta(Joueur, CasesJoueurX, CasesJoueurO, CasesVides, [Coup|AutresC
 	nonVide(CoupsPossibles),
 	nonVide(CasesJoueurX),
 	nonVide(CasesJoueurY),
-	ProfondeurCourante is Profondeur - 1,
-	Alpha2 is -Alpha,
-	Beta2 is -Beta,
+	ProfondeurCourante = Profondeur - 1,
+	Alpha2 = -Alpha,
+	Beta2 = -Beta,
 	%jouer coup,
 	rechercheAlphaBeta(Adversaire, CasesJoueurX, CasesJoueurO, CasesVides, CoupsPossibles, ProfondeurRecherche, Profondeur, Alpha2, Beta2, MeilleurCoup2, ValeurMeilleurCoup2).
 
@@ -80,13 +80,13 @@ rechercheAlphaBeta(Joueur, CasesJoueurX, CasesJoueurO, CasesVides, [Coup|AutresC
 */
 
 evaluation(Joueur, CasesX, CasesO, Valeur) :- 
-	jetonAdverse(Joueur, Adversaire), evaluation(Joueur, Adversaire, CasesX, CasesO, Valeur1), evaluation(Adversaire, Joueur, CasesX, CasesO, Valeur2), Valeur is Valeur1 - Valeur2.
+	jetonAdverse(Joueur, Adversaire), evaluation(Joueur, Adversaire, CasesX, CasesO, Valeur1), evaluation(Adversaire, Joueur, CasesX, CasesO, Valeur2), Valeur = Valeur1 - Valeur2.
 evaluation(croix,_,[],_,0) :- !. %si on évalue le joueur croix et qu'il n'y a plus de cases croix, on a une valeur de 0
 evaluation(rond,_,_,[],0) :- !. %si on évalue le joueur rond et qu'il n'y a plus de cases rond, on a une valeur de 0
 evaluation(croix, Adversaire, [CaseX|CasesX], _, Valeur) :- 
-	evaluation(croix, Adversaire, CasesX, _, Valeur1), valeurCase(CaseX, Valeur2), Valeur is Valeur1 + Valeur2, !.
+	evaluation(croix, Adversaire, CasesX, _, Valeur1), valeurCase(CaseX, Valeur2), Valeur = Valeur1 + Valeur2, !.
 evaluation(rond, Adversaire, _, [CaseO|CasesO], Valeur) :-	
-	evaluation(rond, Adversaire, _, CasesO, Valeur1), valeurCase(CaseO, Valeur2), Valeur is Valeur1 + Valeur2, !.
+	evaluation(rond, Adversaire, _, CasesO, Valeur1), valeurCase(CaseO, Valeur2), Valeur = Valeur1 + Valeur2, !.
 	
 /*
 	elagage procède à une coupure de l'arbre de possibilités si nécessaire
@@ -104,8 +104,10 @@ elagage(_).
 	rechercheMinMax(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, CoupOptimal, Score).
 	
 */
-rechercheMinMax(_, croix, [], _, CoupAJouer, CoupOptimal, Score) :- CoupOptimal is CoupAJouer, Score is 2000,!. %si on ne peut pas jouer >> pas bon
-rechercheMinMax(_, rond, _, [], CoupAJouer, CoupOptimal, Score) :- CoupOptimal is CoupAJouer, Score is -2000,!.  %si l'adversaire ne peut pas jouer >> bon
+rechercheMinMax(_, croix, [], _, CoupAJouer, CoupAJouer, 2000) :- !. %si on ne peut pas jouer >> pas bon
+rechercheMinMax(_, rond, _, [], CoupAJouer, CoupAJouer, 2000) :- !.
+rechercheMinMax(_, croix, _, [], CoupAJouer, CoupAJouer, -2000) :- !. %si l'adversaire peut pas jouer >> pas bon
+rechercheMinMax(_, rond, [], _, CoupAJouer, CoupAJouer, -2000) :- !.
 
 
 rechercheMinMax(1, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, CoupAJouer, Score) :- 
@@ -133,13 +135,13 @@ rechercheMinMax(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, Coup
 	write('Coups possibles pour le joueur '), write(Adversaire), write(' : '),
 	chercherCoupsPossibles(Adversaire, NvCasesJoueurO, NvCasesJoueurX, CasesPossiblesAdvTemp), %on cherche les coups possibles pour l adversaire à partir de la nouvelle configuration
 	getListeCasesPossiblesOldFormat(CasesPossiblesAdvTemp, CasesPossiblesAdv),
-	write('\n'),
+	write('\n'),write('============================='), write(CasesPossiblesAdv), write('\n'),
 	ProfondeurInf is Profondeur-1,
 	(CasesPossiblesAdv \== [] ->
 		write('-----lancerRecherche2('), write(ProfondeurInf), write(', '), write(Adversaire), write(', '), write(NvCasesJoueurX), write(', '), write(NvCasesJoueurO), write('\n'),
-		lancerRecherche(ProfondeurInf, Adversaire,  NvCasesJoueurX, NvCasesJoueurO, CasesPossiblesAdv, CoupOptimal, ScoreCoupMin), Score is -ScoreCoupMin
+		lancerRecherche(ProfondeurInf, Adversaire,  NvCasesJoueurX, NvCasesJoueurO, CasesPossiblesAdv, CoupOptimal, ScoreCoupMin), Score = -ScoreCoupMin
 		;
-		CoupOptimal is CoupAJouer, Score is -2000 %si l'adversaire n'a plus de jeton, c'est un coup optimal!
+		CoupOptimal = CoupAJouer, Score = -2000 %si l'adversaire n'a plus de jeton, c'est un coup optimal!
 	),
 	write(' coupoptimal :'), write(CoupOptimal), write('; score :'), write(Score), write('\n')
 	.	
@@ -152,6 +154,8 @@ rechercheMinMax(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, Coup
 	lancerRecherche(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, CoupsPossibles, MeilleurCoup, Score)
 	
 */
+
+lancerRecherche(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, [], MeilleurCoup, Score) :- !.
 	
 lancerRecherche(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, [Coup], MeilleurCoup, Score) :- 
 	write('-----lancerRecherche plusCases--------\n'),
@@ -166,16 +170,13 @@ lancerRecherche(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, [Coup|CoupsPossi
 	write('  CoupOptimal1 :'), write(CoupOptimal1),
 	write('  CoupOptimal2 :'), write(CoupOptimal2),
 	(Score1 > Score2 ->
-		Score is Score1, MeilleurCoup is CoupOptimal1
+		Score = Score1, MeilleurCoup = CoupOptimal1
 	;
-		Score is Score2, MeilleurCoup is CoupOptimal2
+		Score = Score2, MeilleurCoup = CoupOptimal2
 	),
 	%on prend le score maximum
 	write('    Meilleur score: '), write(MeilleurCoup), write('\n')
-	
 	.
 
-testIA :- getListeCasesPossiblesOldFormat([[27, -1, 24, -1, -1, -1, -1, 45, -1]], CasesPossibles), lancerRecherche(5, rond,  [26, 25, 28, 36], [27], CasesPossibles, MeilleurCoup, Score).
+testIA :- getListeCasesPossiblesOldFormat([[27, -1, 24, -1, -1, -1, -1, 45, -1]], CasesPossibles), lancerRecherche(4, rond,  [26, 25, 28, 36], [27], CasesPossibles, MeilleurCoup, Score).
 interfaceIA(Joueur, CasesJoueurX, CasesJoueurO, CoupsPossibles, MeilleurCoup) :- lancerRecherche(5, Joueur, CasesJoueurX, CasesJoueurO, CoupsPossibles, MeilleurCoup, Score).
-	
-	
