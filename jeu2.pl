@@ -109,23 +109,28 @@ jeu(2, Joueur, ListeRond, ListeCroix) :-
 																chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R), 
 																getListeCasesPossiblesOldFormat(R, RF), afficheJeu(Joueur, RF, ListeCroix, ListeRond), 
 																read(Case), 
-																(member(Case, RF), jouerPion(Case, Joueur, R, ListeRond, NListeRond, NListeCroix, NListeRond)), adversaire(Joueur, Adversaire), jeu(2, Adversaire, NListeRond, NListeCroix).
+																(member(Case, RF), jouerPion(Case, Joueur, R, ListeRond, ListeCroix, NListeRond, NListeCroix)), adversaire(Joueur, Adversaire), jeu(2, Adversaire, NListeRond, NListeCroix).
 
 jeu(1, Joueur, ListeRond, ListeCroix) :-  
 																chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R), 
 																getListeCasesPossiblesOldFormat(R, RF), afficheJeu(Joueur, RF, ListeCroix, ListeRond), 
 																read(Case), 
-																(member(Case, RF), jouerPion(Case, Joueur, R, ListeRond, ListeCroix, NListeCroix, NListeRond)), adversaire(Joueur, Adversaire), 
-																chercherCoupsPossibles(Adversaire,NListeRond, NListeCroix, RIA), 
+																(member(Case, RF), jouerPion(Case, Joueur, R, ListeRond, ListeCroix,NListeRond, NListeCroix)), adversaire(Joueur, Adversaire), 
+																write('\n'), write(NListeRond), write('\n'), write(NListeCroix), write('\n'),
+																chercherCoupsPossibles(Adversaire, NListeRond, NListeCroix, RIA), 
 																getListeCasesPossiblesOldFormat(RIA, RFIA),
-																interfaceIA(Adversaire, NListeCroix, NListeRond, RFIA, MeilleurCoup), jouerPion(MeilleurCoup, Adversaire, RIA, NListeRond, NListeCroix, N2ListeCroix, N2ListeRond),jeu(1, Joueur, N2ListeRond, N2ListeCroix).
+																write('\n'), write(RFIA), write('\n'),
+																interfaceIA(Adversaire, NListeCroix, NListeRond, RFIA, MeilleurCoup), jouerPion(MeilleurCoup, Adversaire, RIA, NListeRond, NListeCroix, N2ListeRond, N2ListeCroix),
+																write('\n'), write(MeilleurCoup), write('\n'),
+																write('\n'), write(N2ListeRond), write('\n'), write(N2ListeCroix), write('\n'),
+																jeu(1, Joueur, N2ListeRond, N2ListeCroix).
 
 
-testJouerPiont(JN, AN):- jouerPion(77, rond, [], [27, -1, 25, 77, -1, -1, -1, -1, -1], [44], [45, 46, 54], JN, AN), write('JN: '), write(JN), write('\n'), write('AN: '), write(AN), write('\n').
+testJouerPiont(JN, AN):- jouerPion(77, rond, [], [27, -1, 25, 77, -1, -1, -1, -1, -1], [44], [45, 46, 54], JN, AN).
 
 
 getListeCasesPossiblesOldFormat([], []):-!.
-getListeCasesPossiblesOldFormat(L, R):- getListeCasesPossiblesD(L, R2), write('annnnd'), write(R2), suppr(-1, R2, R3), supprDoublon(R3, R),!.
+getListeCasesPossiblesOldFormat(L, R):- getListeCasesPossiblesD(L, R2), suppr(-1, R2, R3), supprDoublon(R3, R),!.
 getListeCasesPossiblesD([], []):-!.
 getListeCasesPossiblesD([[_, RG, RD, RH, RB, RHG, RHD, RBG, RBD]], [RG, RD, RH, RB, RHG, RHD, RBG, RBD]):-!.
 getListeCasesPossiblesD([[_, RG, RD, RH, RB, RHG, RHD, RBG, RBD]|LCP], R2):- getListeCasesPossiblesD(LCP, Rx), append([RG, RD, RH, RB, RHG, RHD, RBG, RBD], Rx, R2),!.
@@ -153,10 +158,8 @@ jouerPion(X, Joueur, [[XEnd, RG, RD, RH, RB, RBD, RBG, RHD, RHG]|LCP], ListeRond
 									append(PionsJNDoublon7, PionsJNBD, PionsJNDoublon8), append(PionsANDoublon7, PionsANBD, PionsANDoublon8),
 									append(PionsJN2, PionsJNDoublon8, PionsJNDoublon), append(PionsAN2, PionsANDoublon8, PionsANDoublon), 
 									supprDoublon(PionsJNDoublon, PionsJN), supprDoublon(PionsANDoublon, PionsANATraiter), supprElements(PionsJN, PionsANATraiter, PionsAN),
-									((Joueur == rond, NListeRond = PionsAN, NListeCroix = PionsJN);
-									(Joueur == croix, NListeCroix = PionsAN, NListeRond = PionsJN)),
-	write('-------------------Nouveaux pions de X :'), write(NListeCroix),
-	write('\n---------------------------Nouveaux pions de O :'), write(NListeRond),!.
+									((Joueur == rond, NListeRond = PionsJN, NListeCroix = PionsAN);
+									(Joueur == croix, NListeCroix = PionsJN, NListeRond = PionsAN)),!.
 
 
 
@@ -230,4 +233,3 @@ coupsLegauxSecondStep(Case, CaseExp, Direction, PionsJ, PionsA, R):- getVoisin(C
 
 																		   
 addElem(X, L, [X|L]).
-
