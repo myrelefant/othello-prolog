@@ -92,10 +92,18 @@ pionJoueur(rond, ListeRond, ListeCroix, ListeRond).
 pionJoueur(croix, ListeRond, ListeCroix, ListeCroix).
 
 
-testJeu(R, C) :- jeu(rond, [27], [26, 25, 28, 36]),!.
+testJeu :- jeu(rond, [27], [26, 25, 28, 36]),!.
 
+compte([],0):-!.
+compte([_|X],Y):-
+    compte(X,D),
+    Y is D+1,!.
+compte([_|X],Y):-
+    compte(X,Y),!.
 
-
+jeu(_, [], _):- afficheVainqueur(croix),!.
+jeu(_, _, []):- afficheVainqueur(rond),!.
+jeu(Joueur, ListeRond, ListeCroix):- chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R), R == [], compte(ListeRond, RRond), compte(ListeCroix, RCroix), ((RRond > RCroix, afficheVainqueur(rond)); (RRond < RCroix, afficheVainqueur(croix))),!.
 jeu(Joueur, ListeRond, ListeCroix) :-  
 																chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R), 
 																getListeCasesPossiblesOldFormat(R, RF), afficheJeu(Joueur, RF, ListeCroix, ListeRond), 
@@ -110,7 +118,8 @@ jeu(Joueur, ListeRond, ListeCroix) :-
 testJouerPiont(JN, AN):- jouerPion(77, rond, [], [27, -1, 25, 77, -1, -1, -1, -1, -1], [44], [45, 46, 54], JN, AN), write('JN: '), write(JN), write('\n'), write('AN: '), write(AN), write('\n').
 
 
-getListeCasesPossiblesOldFormat(L, R):- getListeCasesPossiblesD(L, R2), suppr(-1, R2, R3), supprDoublon(R3, R),!.
+getListeCasesPossiblesOldFormat([], []):-!.
+getListeCasesPossiblesOldFormat(L, R):- getListeCasesPossiblesD(L, R2), suppr(-1, R2, R3), supprDoublon(R3, R), write(R), write('\n'),!.
 getListeCasesPossiblesD([], _):-!.
 getListeCasesPossiblesD([XEnd, RG, RD, RH, RB, RHG, RHD, RBG, RBD], [RG, RD, RH, RB, RHG, RHD, RBG, RBD]):-!.
 getListeCasesPossiblesD([[XEnd, RG, RD, RH, RB, RHG, RHD, RBG, RBD]|LCP], [RG, RD, RH, RB, RHG, RHD, RBG, RBD|R2]):- getListeCasesPossiblesD(LCP, R2),!.
@@ -141,6 +150,7 @@ jouerPion(X, Joueur, [[XEnd, RG, RD, RH, RB, RBD, RBG, RHD, RHG]|LCP], ListeRond
 
 
 
+supprDoublon([] , []):-!.
 supprDoublon([E],[E]):- !. %une liste à un seul élément est un ensemble
 supprDoublon([T|Q],[T|Q2]):- supprDoublon(Q,Q2), not(member(T,Q2)),!. %si T n est pas encore présent dans Q2, on cherche à transformar en ensemble Q dans Q2 puis on ajoute T à Q2.
 supprDoublon([T|Q],L2):- supprDoublon(Q,L2), member(T,L2).
