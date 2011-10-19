@@ -104,6 +104,10 @@ elagage(_).
 	rechercheMinMax(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, CoupOptimal, Score).
 	
 */
+rechercheMinMax(_, croix, [], _, CoupAJouer, CoupOptimal, Score) :- CoupOptimal is CoupAJouer, Score is 2000,!. %si on ne peut pas jouer >> pas bon
+rechercheMinMax(_, rond, _, [], CoupAJouer, CoupOptimal, Score) :- CoupOptimal is CoupAJouer, Score is -2000,!.  %si l'adversaire ne peut pas jouer >> bon
+
+
 rechercheMinMax(1, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, CoupAJouer, Score) :- 
 	write('-----rechercheMinMaxFin--------'),
 	write('Pions de X :'), write(CasesJoueurX),
@@ -138,10 +142,7 @@ rechercheMinMax(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, CoupAJouer, Coup
 		CoupOptimal is CoupAJouer, Score is -2000 %si l'adversaire n'a plus de jeton, c'est un coup optimal!
 	),
 	write(' coupoptimal :'), write(CoupOptimal), write('; score :'), write(Score), write('\n')
-	.
-	
-	
-	
+	.	
 
 /*
 	lancerRecherche trouve, pour un plateau donné, le meilleur coup à jouer pour le joueur Joueur en effectuant une
@@ -175,9 +176,6 @@ lancerRecherche(Profondeur, Joueur, CasesJoueurX, CasesJoueurO, [Coup|CoupsPossi
 	.
 
 testIA :- getListeCasesPossiblesOldFormat([[27, -1, 24, -1, -1, -1, -1, 45, -1]], CasesPossibles), lancerRecherche(5, rond,  [26, 25, 28, 36], [27], CasesPossibles, MeilleurCoup, Score).
+interfaceIA(Joueur, CasesJoueurX, CasesJoueurO, CoupsPossibles, MeilleurCoup) :- lancerRecherche(5, Joueur, CasesJoueurX, CasesJoueurO, CoupsPossibles, MeilleurCoup, Score).
 	
 	
-	
-	%testIA :- getListeCasesPossiblesOldFormat([[44, 47, -1, 64, -1, -1, -1, -1, -1]], CasesPossibles), lancerRecherche(1, rond,  [45, 46, 54], [44], CasesPossibles, MeilleurCoup, Score).
-
-
