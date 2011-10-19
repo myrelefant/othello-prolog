@@ -116,10 +116,10 @@ testJouerPiont(JN, AN):- jouerPion(77, rond, [], [27, -1, 25, 77, -1, -1, -1, -1
 
 
 getListeCasesPossiblesOldFormat([], []):-!.
-getListeCasesPossiblesOldFormat(L, R):- getListeCasesPossiblesD(L, R2), suppr(-1, R2, R3), supprDoublon(R3, R), write(R), write('\n'),!.
-getListeCasesPossiblesD([], _):-!.
-getListeCasesPossiblesD([_, RG, RD, RH, RB, RHG, RHD, RBG, RBD], [RG, RD, RH, RB, RHG, RHD, RBG, RBD]):-!.
-getListeCasesPossiblesD([[_, RG, RD, RH, RB, RHG, RHD, RBG, RBD]|LCP], [RG, RD, RH, RB, RHG, RHD, RBG, RBD|R2]):- getListeCasesPossiblesD(LCP, R2),!.
+getListeCasesPossiblesOldFormat(L, R):- getListeCasesPossiblesD(L, R2), write('annnnd'), write(R2), suppr(-1, R2, R3), supprDoublon(R3, R),!.
+getListeCasesPossiblesD([], []):-!.
+getListeCasesPossiblesD([[_, RG, RD, RH, RB, RHG, RHD, RBG, RBD]], [RG, RD, RH, RB, RHG, RHD, RBG, RBD]):-!.
+getListeCasesPossiblesD([[_, RG, RD, RH, RB, RHG, RHD, RBG, RBD]|LCP], R2):- getListeCasesPossiblesD(LCP, Rx), append([RG, RD, RH, RB, RHG, RHD, RBG, RBD], Rx, R2),!.
 
 jouerPion(_,_, [], _, _, _, _):-!.
 jouerPion(X, Joueur, [[XEnd, RG, RD, RH, RB, RBD, RBG, RHD, RHG]|LCP], ListeRond, ListeCroix, NListeRond, NListeCroix):- 
@@ -186,15 +186,14 @@ suppr(Lettre,[T1|Q1],[T1|Q2]):-suppr(Lettre,Q1,Q2). %si la lettre analysée n es
 chercherCoupsPossibles(Joueur,ListeRond, ListeCroix, R):- 
 									adversaire(Joueur, Adversaire), 
 									pionJoueur(Joueur, ListeRond, ListeCroix, PionsJ),
-									pionJoueur(Adversaire, ListeRond, ListeCroix, PionsA), chercherCoupsPossibles2(PionsJ, PionsJ, PionsA, R), write(R).
+									pionJoueur(Adversaire, ListeRond, ListeCroix, PionsA), chercherCoupsPossibles2(PionsJ, PionsJ, PionsA, R).
 
 
 
-chercherCoupsPossibles2(_,[],_,[]):-!.
 chercherCoupsPossibles2([], _, _,_):-!.
+chercherCoupsPossibles2(_,[],_,[]):-!.
 chercherCoupsPossibles2([TPj], PionsJ, PionsA, [RTemp]):- coupsLegaux(TPj, PionsJ, PionsA, RTemp),!.
-chercherCoupsPossibles2([TPj|LPj], PionsJ, PionsA, [RTemp|R]):- coupsLegaux(TPj, PionsJ, PionsA, RTemp), chercherCoupsPossibles2(LPj, PionsJ, PionsA, R),!.
-
+chercherCoupsPossibles2([TPj|LPj], PionsJ, PionsA, [RLeg|R]):- coupsLegaux(TPj, PionsJ, PionsA, RLeg), chercherCoupsPossibles2(LPj, PionsJ, PionsA, R),!.
 
 coupsLegaux(X, PionsJ, PionsA, [X | [RD, RG, RB, RH, RHG, RHD, RBG, RBD]]) :- 
 																						  coupsLegauxFunc(X, droite, PionsJ, PionsA, RD),
